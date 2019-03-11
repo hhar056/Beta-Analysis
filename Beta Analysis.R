@@ -7,6 +7,7 @@ library(tidyverse)
 library(modelr)
 library(stringr)
 
+setwd("G:/GS Value Added Team/01 GS Analytics/Beta Analysis")
 
 # Get the date range
 last_date <- Sys.Date()
@@ -129,53 +130,122 @@ share_data<-share_data%>%
 
 # Exploratory Analysis
 
-#Look at Average Dollar Volume
-png(file="averagedollarvolume.png")
-hist(share_data$average.dollar.volume,breaks=50)
-dev.off
 
-hist(share_data$average.dollar.volume,breaks=50)
-with(share_data%>%filter(Source=="NZ"),{  plot(ln.average.dollar.volume,beta) } )
+#Look at Average Dollar Volume in NZ and S&P500
+png(file="01averagedollarvolume.png",width=600,height=200)
+par(mfrow=c(1,3),mar=c(4,4,2,1))
 with(share_data%>%filter(Source=="NZ"),{ 
-  hist(beta, breaks=20) 
-  hist(log(beta), breaks=20)  })
+  hist(average.dollar.volume,breaks=10, col="red",xlab="NZX Average Dollar Volume",main="NZX Average Dollar Volume")
+} )
+with(share_data%>%filter(Source=="SP"),{ 
+  hist(average.dollar.volume,breaks=10, col="red",xlab="S&P500 Average Dollar Volume",main="S&P500 Average Dollar Volume")
+})
+with(share_data,{ 
+  hist(average.dollar.volume,breaks=10, col="red",xlab="All Average Dollar Volume",main="All Average Dollar Volume")
+} )
 
 
-
+par(mfrow=c(1,1))
 dev.off()
-par(mfcol=c(1,2))
+
+#Look at Ln Average Dollar Volume in NZ and S&P500
+png(file="02lnaveragedollarvolume.png",width=600,height=200)
+par(mfrow=c(1,3))
+with(share_data%>%filter(Source=="NZ"),{ 
+  hist(ln.average.dollar.volume,breaks=10, col="red",xlab="NZX Log Average Dollar Volume",main="NZX Ln Average Dollar Volume")
+} )
+with(share_data%>%filter(Source=="SP"),{ 
+  hist(ln.average.dollar.volume,breaks=10, col="red",xlab="S&P500 Log Average Dollar Volume",main="S&P500 Ln Average Dollar Volume")
+})
+with(share_data,{ 
+  hist(ln.average.dollar.volume,breaks=10, col="red",xlab="All Log Average Dollar Volume",main="All Ln Average Dollar Volume")
+})
+par(mfrow=c(1,1))
+dev.off()
+
+
+#Look at Ln Average Dollar Volume in NZ and S&P500
+png(file="03beta.png",width=600,height=200)
+par(mfrow=c(1,3))
+with(share_data%>%filter(Source=="NZ"),{ 
+  hist(beta,breaks=10, col="red",xlab="NZX Betas",main="NZX Betas")
+} )
+with(share_data%>%filter(Source=="SP"),{ 
+  hist(beta,breaks=10, col="red",xlab="S&P500 Betas",main="S&P500 Betas")
+})
+with(share_data,{ 
+  hist(beta,breaks=10, col="red",xlab="All Betas",main="All Betas")
+})
+par(mfrow=c(1,1))
+dev.off()
+
+
+#Look at whether there's a discernable relationship between Beta and the Ln of Average Dollar Volume
+
+png(file="04relationship.png",width=600,height=200)
+par(mfcol=c(1,3))
 with(share_data%>%filter(Source=="NZ"),{
-  hist(ln.average.dollar.volume,breaks=20)
-  plot(ln.average.dollar.volume,log(beta))
-  hist(log(beta),breaks=20)
+  plot(ln.average.dollar.volume,beta,col="red",xlab="Log Average Dollar Volume",ylab="Beta",main="NZX")
 })
 with(share_data%>%filter(Source=="SP"),{
-  hist(ln.average.dollar.volume,breaks=10)
-  plot(ln.average.dollar.volume,beta)
-  hist(beta,breaks=20)
+  plot(ln.average.dollar.volume,beta,col="blue",xlab="Log Average Dollar Volume",ylab="Beta",main="S&P500")
 })
 with(share_data,{
-  hist(ln.average.dollar.volume,breaks=10)
-  plot(ln.average.dollar.volume,beta)
-  hist(beta,breaks=20)
+  plot(ln.average.dollar.volume,beta, type="n",xlab="Log Average Dollar Volume",ylab="Beta",main="All")
 })
+with(share_data%>%filter(Source=="NZ"),{
+  points(ln.average.dollar.volume,beta,col="red")
+})
+with(share_data%>%filter(Source=="SP"),{
+  points(ln.average.dollar.volume,beta,col="blue")
+})
+par(mfrow=c(1,1))
+dev.off()
 
-par(mfcol=c(1,1))
-share_data%>%filter(Source=="NZ") %>% arrange(desc(beta))
-share_data%>%arrange(beta)
+#Fit Linear Models, check stats and check assumptions
+
 nzlm<-lm(beta~ln.average.dollar.volume,data=(share_data%>%filter(Source=="NZ")))
 summary(nzlm)
-plot(nzlm)
+shapiro.test(residuals(nzlm))
+
+png(file="05nzlm.png")
+par(mfcol=c(2,2),oma=c(0,0,2,0))
+plot(nzlm,sub.caption="NZX Linear Model: Beta ~ Log Average Dollar Value")
+dev.off()
 
 splm<-lm(beta~ln.average.dollar.volume,data=share_data%>%filter(Source=="SP"))
 summary(splm)
-plot(splm)
+shapiro.test(residuals(splm))
+
+png(file="06splm.png")
+par(mfcol=c(2,2),oma=c(0,0,2,0))
+plot(splm,sub.caption="S&P500 Linear Model: Beta ~ Log Average Dollar Value")
+dev.off()
 
 mainlm<-lm(beta~ln.average.dollar.volume,data=share_data)
 summary(mainlm)
-hist(residuals(mainlm))
 shapiro.test(residuals(mainlm))
 
+png(file="07mainlm.png")
+par(mfcol=c(2,2),oma=c(0,0,2,0))
+plot(mainlm,sub.caption="Main Linear Model: Beta ~ Log Average Dollar Value")
+dev.off()
+
+#Fit regression to larger plot
+png(file="08main.png")
+par(mfcol=c(1,1))
+with(share_data,{
+  plot(ln.average.dollar.volume,beta, type="n",xlab="Ln Average Dollar Volume",ylab="Beta",main="Main Linear Model: Beta ~ Log Average Dollar Value")
+})
+with(share_data%>%filter(Source=="NZ"),{
+  points(ln.average.dollar.volume,beta,col="red")
+})
+with(share_data%>%filter(Source=="SP"),{
+  points(ln.average.dollar.volume,beta,col="blue")
+})
+abline(lm(beta~ln.average.dollar.volume,data=share_data),lwd=3,col="purple")
+par(mfrow=c(1,1))
+dev.off()
 
 #Market Capitalisation Tests - not used
 nz_df<-nz_df%>%rename(ticker=Code)

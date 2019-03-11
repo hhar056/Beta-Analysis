@@ -13,6 +13,8 @@ It would be helpful if we could build a model to restate betas of public compani
 ### Limitations
 
 We did not adjust for companies that:
+  - We need to take the absolute value of Betas
+  - Seems to be a remaining trend in the NZX data
   - Are in administration or liquidation
   - Recently listed and so have a short trading history
   - Have issued or split stock
@@ -147,6 +149,7 @@ F-statistic: 247.4 on 1 and 610 DF,  p-value: < 2.2e-16
 ### Checking Assumptions
 
 The data are independent by design
+
 Histograms of the residuals seem to follow a normal distribution for each model.
 
 ![Histograms of residuals](https://github.com/hhar056/Beta-Analysis/blob/master/08residuals.png?raw=true)
@@ -191,13 +194,13 @@ However, this may be due to sample size. Plots of the residuals for each model s
 
 Beta appears to depend on the average trading volume (in dollar terms) of the security, and Beta increases as volume increases.
 
-For NZX data, the relationship described a large amount of the variance in Beta, i.e. volume was a reaonably good predictor of Beta.
+For NZX data, the relationship described around 20% of the variance in beta
 
-For the S&P500 data, the relationship did not describe a large amount of the variance in Beta, i.e. the model is not a good predictor of Beta
+For the S&P500 data, the relationship described around 3% of the variance in beta
 
-For the combined data set, the relationship described a large amount of the variance in Beta, i.e. volume was a reaonably good predictor of Beta.
+For the combined data set, the relationship described around 29% of the variance in beta
 
-The relationship is multiplicative
+The coefficient of each model is about 0.07, meanin gif we increase the average trading volume of a security by 1%, we would expect an increase in Beta of 0.07%.
 
 
 

@@ -138,10 +138,10 @@ with(share_data%>%filter(Source=="NZ"),{
   hist(average.dollar.volume,breaks=10, col="red",xlab="NZX Average Dollar Volume",main="NZX Average Dollar Volume")
 } )
 with(share_data%>%filter(Source=="SP"),{ 
-  hist(average.dollar.volume,breaks=10, col="red",xlab="S&P500 Average Dollar Volume",main="S&P500 Average Dollar Volume")
+  hist(average.dollar.volume,breaks=10, col="blue",xlab="S&P500 Average Dollar Volume",main="S&P500 Average Dollar Volume")
 })
 with(share_data,{ 
-  hist(average.dollar.volume,breaks=10, col="red",xlab="All Average Dollar Volume",main="All Average Dollar Volume")
+  hist(average.dollar.volume,breaks=10, col="purple",xlab="All Average Dollar Volume",main="All Average Dollar Volume")
 } )
 
 
@@ -155,10 +155,10 @@ with(share_data%>%filter(Source=="NZ"),{
   hist(ln.average.dollar.volume,breaks=10, col="red",xlab="NZX Log Average Dollar Volume",main="NZX Ln Average Dollar Volume")
 } )
 with(share_data%>%filter(Source=="SP"),{ 
-  hist(ln.average.dollar.volume,breaks=10, col="red",xlab="S&P500 Log Average Dollar Volume",main="S&P500 Ln Average Dollar Volume")
+  hist(ln.average.dollar.volume,breaks=10, col="blue",xlab="S&P500 Log Average Dollar Volume",main="S&P500 Ln Average Dollar Volume")
 })
 with(share_data,{ 
-  hist(ln.average.dollar.volume,breaks=10, col="red",xlab="All Log Average Dollar Volume",main="All Ln Average Dollar Volume")
+  hist(ln.average.dollar.volume,breaks=10, col="purple",xlab="All Log Average Dollar Volume",main="All Ln Average Dollar Volume")
 })
 par(mfrow=c(1,1))
 dev.off()
@@ -171,10 +171,10 @@ with(share_data%>%filter(Source=="NZ"),{
   hist(beta,breaks=10, col="red",xlab="NZX Betas",main="NZX Betas")
 } )
 with(share_data%>%filter(Source=="SP"),{ 
-  hist(beta,breaks=10, col="red",xlab="S&P500 Betas",main="S&P500 Betas")
+  hist(beta,breaks=10, col="blue",xlab="S&P500 Betas",main="S&P500 Betas")
 })
 with(share_data,{ 
-  hist(beta,breaks=10, col="red",xlab="All Betas",main="All Betas")
+  hist(beta,breaks=10, col="purple",xlab="All Betas",main="All Betas")
 })
 par(mfrow=c(1,1))
 dev.off()
@@ -231,8 +231,17 @@ par(mfcol=c(2,2),oma=c(0,0,2,0))
 plot(mainlm,sub.caption="Main Linear Model: Beta ~ Log Average Dollar Value")
 dev.off()
 
+#Look at Residual Histograms
+png(file="08residuals.png",width=600,height=200)
+par(mfrow=c(1,3))
+hist(residuals(nzlm),breaks=10, col="red",xlab="Residuals",main="NZX Model")
+hist(residuals(splm),breaks=10, col="blue",xlab="Residuals",main="S&P Model")
+hist(residuals(mainlm),breaks=10, col="purple",xlab="Residuals",main="Main Model")
+par(mfrow=c(1,1))
+dev.off()
+
 #Fit regression to larger plot
-png(file="08main.png")
+png(file="09main.png")
 par(mfcol=c(1,1))
 with(share_data,{
   plot(ln.average.dollar.volume,beta, type="n",xlab="Ln Average Dollar Volume",ylab="Beta",main="Main Linear Model: Beta ~ Log Average Dollar Value")
@@ -246,6 +255,15 @@ with(share_data%>%filter(Source=="SP"),{
 abline(lm(beta~ln.average.dollar.volume,data=share_data),lwd=3,col="purple")
 par(mfrow=c(1,1))
 dev.off()
+
+#Try Quadratic
+
+nzlm2<-lm(beta~poly(ln.average.dollar.volume,2)+ln.average.dollar.volume,data=(share_data%>%filter(Source=="NZ")))
+summary(nzlm2)
+par(mfcol=c(2,2),oma=c(0,0,2,0))
+plot(nzlm2,sub.caption="Main Linear Model: Beta ~ Log Average Dollar Value")
+
+shapiro.test(residuals(nzlm))
 
 #Market Capitalisation Tests - not used
 nz_df<-nz_df%>%rename(ticker=Code)

@@ -1,9 +1,3 @@
-# Dillinger
-
-[![N|Solid](https://cldup.com/dTxpPi9lDf.thumb.png)](https://nodesource.com/products/nsolid)
-
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
-
 # A look at the Relationship Between Individual Beta and Trading Volume
 
 ## Background
@@ -153,8 +147,37 @@ F-statistic: 247.4 on 1 and 610 DF,  p-value: < 2.2e-16
 ### Checking Assumptions
 
 The data are independent by design
+Histograms of the residuals seem to follow a normal distribution for each model.
 
-Plots of the residuals for each model seem to show reasonably even scatter around 0 withone or two outliers. The Normal QQ plot shows points lying reasonably close to the straight line, although with some potential residual skewness, primarily caused by the same points. The cook's distance shows that these points are not overly influential to the models:
+![Histograms of residuals](https://github.com/hhar056/Beta-Analysis/blob/master/08residuals.png?raw=true)
+
+Shapiro Wilk test shows strong evidence against normality
+
+```
+> shapiro.test(residuals(nzlm))
+
+	Shapiro-Wilk normality test
+
+data:  residuals(nzlm)
+W = 0.90272, p-value = 4.786e-07
+
+> shapiro.test(residuals(splm))
+
+	Shapiro-Wilk normality test
+
+data:  residuals(splm)
+W = 0.9884, p-value = 0.0005485
+
+> shapiro.test(residuals(mainlm))
+
+	Shapiro-Wilk normality test
+
+data:  residuals(mainlm)
+W = 0.98838, p-value = 8.846e-05
+
+```
+
+However, this may be due to sample size. Plots of the residuals for each model seem to show reasonably even scatter around 0 withone or two outliers. The Normal QQ plot shows points lying reasonably close to the straight line, although with some potential residual skewness, primarily caused by the same points. The cook's distance shows that these points are not overly influential to the models:
 
 ![Model Integrity plots - NZX](https://github.com/hhar056/Beta-Analysis/blob/master/05nzlm.png?raw=true)
 
@@ -162,9 +185,7 @@ Plots of the residuals for each model seem to show reasonably even scatter aroun
 
 ![Model Integrity plots - All](https://github.com/hhar056/Beta-Analysis/blob/master/07mainlm.png?raw=true)
 
-Histograms of the residuals seem to follow a normal distribution for each model.
 
-Shapiro Wilk test shows no evidence against normality
 
 ### Inference
 

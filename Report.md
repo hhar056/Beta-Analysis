@@ -1,5 +1,11 @@
 # A look at the Relationship Between Individual Beta and Trading Volume
 
+## Summary
+
+There is a relationship between the average trading volume and Beta, and we would expect the Beta of a stock that trades at double the volume (in dollar terms) to have a Beta of around 0.05 higher. 
+
+The relationship is statistically significant, which is useful for our purposes, although the model isn't reasonable to use for prediction of a security's Beta.
+
 ## Background
 
 Beta's are commonly used to value securities and diversify portfolios, and are used as a measurement of the riskiness of an individual security.
@@ -13,11 +19,13 @@ It would be helpful if we could build a model to restate betas of public compani
 ### Limitations
 
 We did not adjust for companies that:
-  - We need to take the absolute value of Betas
-  - Seems to be a remaining trend in the NZX data
   - Are in administration or liquidation
   - Recently listed and so have a short trading history
   - Have issued or split stock
+
+Also
+  - We should think about whether to take the absolute value of Betas
+  - Seems to be a remaining trend in the NZX data
 
 We were unable to scrape data for six securities, which have been disregarded:
 ```
